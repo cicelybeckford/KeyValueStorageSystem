@@ -41,6 +41,7 @@ def CreateServerSocket(port):
     #############################################
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', port))
+    print("Socket created")
     return sock
 
 def ConnectClientToServer(server_sock):
@@ -73,10 +74,10 @@ def ReadCommand(sock):
     #TODO: Implement ReadCommand Function
     #############################################
     output = ""
-    data = s.recv(1)
+    data = sock.recv(1)
     while data != "\n":
         output += data
-        data = s.recv(1)
+        data = sock.recv(1)
         
     return output
   
@@ -100,10 +101,10 @@ def ParseCommand(command):
     command = None
     if args:
         command = args[0]
-        arg1 = None
+    arg1 = None
     if len(args) > 1:
         arg1 = args[1]
-        remainder = None
+    remainder = None
     if len(args) > 2:
         remainder = ' '.join(args[2:])
     return command, arg1, remainder
@@ -140,9 +141,9 @@ class KeyValueStore(object):
         ###########################################
         #TODO: Implement GetValue Function
         ###########################################
-        val = None
-        if max_age_in_sec and  self._dict[key] <= max_age_in_sec:
-            val = self._dict[key]
+        val = self._dict[key]
+        if max_age_in_sec and  val > max_age_in_sec:
+            val = None
         return val
 
 

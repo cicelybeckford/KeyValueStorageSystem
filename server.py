@@ -61,7 +61,7 @@ def PutCommand(name, text, database):
     #TODO: Implement PUT function
     ##########################################
     database.StoreValue(name, text)
-    return 
+    return name + " = " + text
 
 
 def GetCommand(name, database):
@@ -98,7 +98,7 @@ def DumpCommand(database):
     #TODO: Implement DUMP function
     ##########################################
     keys = database.Keys()
-    output  = ",".join(keys)
+    output  = ", ".join(keys)
     return output
  
 
