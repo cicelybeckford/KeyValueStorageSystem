@@ -1,12 +1,12 @@
 """A proxy server that forwards requests from one port to another server.
-
-To run this using Python 2.7:
-
-% python proxy.py
-
-It listens on a port (`LISTENING_PORT`, below) and forwards commands to the
-server. The server is at `SERVER_ADDRESS`:`SERVER_PORT` below.
-"""
+    
+    To run this using Python 2.7:
+    
+    % python proxy.py
+    
+    It listens on a port (`LISTENING_PORT`, below) and forwards commands to the
+    server. The server is at `SERVER_ADDRESS`:`SERVER_PORT` below.
+    """
 
 # This code uses Python 2.7. These imports make the 2.7 code feel a lot closer
 # to Python 3. (They're also good changes to the language!)
@@ -32,59 +32,83 @@ MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 def ForwardCommandToServer(command, server_addr, server_port):
     """Opens a TCP socket to the server, sends a command, and returns response.
-
-    Args:
-    command: A single line string command with no newlines in it.
-    server_addr: A string with the name of the server to forward requests to.
-    server_port: An int from 0 to 2^16 with the port the server is listening on.
-    Returns:
-    A single line string response with no newlines.
-    """
-
-    ###################################################
-    #TODO: Implement Function: WiP
-    ###################################################
+        
+        Args:
+        command: A single line string command with no newlines in it.
+        server_addr: A string with the name of the server to forward requests to.
+        server_port: An int from 0 to 2^16 with the port the server is listening on.
+        Returns:
+        A single line string response with no newlines.
+        """
+    sock = library.CreateClientSocket(server_addr, server_port)
+    sock.send('%s\n' % command)
+    result = library.ReadCommand(sock)
+    sock.close()
+    return result
+###################################################
+#TODO: Implement Function: WiP
+###################################################
 
 
 
 def CheckCachedResponse(command_line, cache):
     cmd, name, text = library.ParseCommand(command_line)
+    
+    out = None
+    
+    if cmd == 'GET':
+        temp = cache.GetValue(name, MAX_CACHE_AGE_SEC)
+        out = (name, temp)
+    
+    if cmd == 'PUT' and cache.GetValue(name, MAX_CACHE_AGE_SEC):
+        cache.StoreValue(name, text)
+    
+    return out
 
-    # Update the cache for PUT commands but also pass the traffic to the server.
-    ##########################
-    #TODO: Implement section
-    ##########################
+# Update the cache for PUT commands but also pass the traffic to the server.
+##########################
+#TODO: Implement section
+##########################
 
-    # GET commands can be cached.
+# GET commands can be cached.
 
-    ############################
-    #TODO: Implement section
-    ############################
-    return 1
-  
-
+############################
+#TODO: Implement section
+############################
 
 def ProxyClientCommand(sock, server_addr, server_port, cache):
     """Receives a command from a client and forwards it to a server:port.
-
-    A single command is read from `sock`. That command is passed to the specified
-    `server`:`port`. The response from the server is then passed back through
-    `sock`.
-
-    Args:
-    sock: A TCP socket that connects to the client.
-    server_addr: A string with the name of the server to forward requests to.
-    server_port: An int from 0 to 2^16 with the port the server is listening on.
-    cache: A KeyValueStore object that maintains a temorary cache.
-    max_age_in_sec: float. Cached values older than this are re-retrieved from
-      the server.
-    """
-
+        
+        A single command is read from `sock`. That command is passed to the specified
+        `server`:`port`. The response from the server is then passed back through
+        `sock`.
+        
+        Args:
+        sock: A TCP socket that connects to the client.
+        server_addr: A string with the name of the server to forward requests to.
+        server_port: An int from 0 to 2^16 with the port the server is listening on.
+        cache: A KeyValueStore object that maintains a temporary cache.
+        max_age_in_sec: float. Cached values older than this are re-retrieved from
+        the server.
+        """
+    
     ###########################################
     #TODO: Implement ProxyClientCommand
     ###########################################
-
-
+    command = library.ReadCommand(sock)
+    result = CheckCachedResponse(command, cache)
+    
+    if result:
+        if result[1]:
+            msg = result[1]
+        else:
+            msg = ForwardCommandToServer(command, server_addr, server_port)
+            if msg != "Not Found.":
+                cache.StoreValue(result[0], msg)
+    else:
+        msg = ForwardCommandToServer(command, server_addr, server_port)
+    
+    sock.send(msg)
 
 
 def main():
@@ -100,9 +124,9 @@ def main():
         ProxyClientCommand(client_sock, SERVER_ADDRESS, SERVER_PORT, cache)
         client_sock.close()
 
-    #################################
-    #TODO: Close socket's connection
-    #################################
+#################################
+#TODO: Close socket's connection
+#################################
 
 
 main()
