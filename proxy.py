@@ -44,7 +44,7 @@ def ForwardCommandToServer(command, server_addr, server_port):
     sock.send('%s\n' % command)
     result = library.ReadCommand(sock)
     sock.close()
-    return result
+    return result.strip('\n')
 
 
 def CheckCachedResponse(command_line, cache):
@@ -57,7 +57,7 @@ def CheckCachedResponse(command_line, cache):
         out = (name, temp)
     
     if cmd == 'PUT' and cache.GetValue(name, MAX_CACHE_AGE_SEC):
-        cache.StoreValue(name, '%s\n' % text)
+        cache.StoreValue(name, text)
     
     return out
 
@@ -91,7 +91,7 @@ def ProxyClientCommand(sock, server_addr, server_port, cache):
     else:
         msg = ForwardCommandToServer(command, server_addr, server_port)
     
-    sock.send(msg)
+    sock.send('%s\n' % msg)
 
 
 def main():
