@@ -57,9 +57,6 @@ def PutCommand(name, text, database):
         then the string describes the error.
         """
     # Store the value in the database.
-    ##########################################
-    #TODO: Implement PUT function
-    ##########################################
     database.StoreValue(name, text)
     return name + " = " + text
 
@@ -76,12 +73,9 @@ def GetCommand(name, database):
         A human readable string describing the result. If there is an error,
         then the string describes the error.
         """
-    ##########################################
-    #TODO: Implement GET function
-    ##########################################
-    if database.GetValue(name):
-        val = str(database.GetValue(name))
-    else:
+  
+    val = database.GetValue(name)
+    if not val:
         val = "Not Found."
     return val
 
@@ -97,10 +91,7 @@ def DumpCommand(database):
         A human readable string describing the result. If there is an error,
         then the string describes the error.
         """
-    
-    ##########################################
-    #TODO: Implement DUMP function
-    ##########################################
+
     keys = database.Keys()
     if keys:
         output  = ", ".join(keys)
@@ -146,10 +137,6 @@ def main():
         client_sock.close()
 
 # We're done with the client, so clean up the socket.
-
-#################################
-#TODO: Close socket's connection
-#################################
 
 
 

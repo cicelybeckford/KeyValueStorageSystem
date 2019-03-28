@@ -34,13 +34,14 @@ def CreateServerSocket(port):
         Returns:
         An socket that implements TCP/IP.
         """
-    
-    #############################################
-    #TODO: Implement CreateServerSocket Function
-    #############################################
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('', port))
-    sock.listen(5)
+
+    try:
+      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      sock.bind(('', port))
+      sock.listen(5)
+    except socket.error, e:
+      print(e)
+      sys.exit(1)
     return sock
 
 def ConnectClientToServer(server_sock):
@@ -48,9 +49,6 @@ def ConnectClientToServer(server_sock):
     # client.
     
     print("Waiting for client...")
-    #############################################
-    #TODO: Implement CreateClientSocket Function
-    #############################################
     return server_sock.accept()
 
 
@@ -58,31 +56,25 @@ def ConnectClientToServer(server_sock):
 def CreateClientSocket(server_addr, port):
     """Creates a socket that connects to a port on a server."""
     
-    #############################################
-    #TODO: Implement CreateClientSocket Function
-    #############################################
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((server_addr, port))
+    try:
+      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      sock.connect((server_addr, port))
+    except socket.error, e:
+      print(e)
+      sys.exit(1)
     return sock
 
 def ReadCommand(sock):
     """Read a single command from a socket. The command must end in newline."""
     
-    #############################################
-    #TODO: Implement ReadCommand Function
-    #############################################
     try:
         data = sock.recv(COMMAND_BUFFER_SIZE)
-        while data and "\n" not in data:
-            data += sock.recv(COMMAND_BUFFER_SIZE)
     except socket.error, e:
         err = e.args[0]
         if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
             sleep(1)
             print("No data available")
-
         else:
-            # a "real" error occurred
             print(e)
             sys.exit(1)
     return data
@@ -124,10 +116,7 @@ class KeyValueStore(object):
         """
     
     def __init__(self):
-        
-        ###########################################
-        #TODO: Implement __init__ Function
-        ###########################################
+
         self._dict = {}
     
     def GetValue(self, key, max_age_in_sec=None):
@@ -143,10 +132,7 @@ class KeyValueStore(object):
             None or the value.
             """
         # Check if we've ever put something in the cache.
-        
-        ###########################################
-        #TODO: Implement GetValue Function
-        ###########################################
+
         val = None
         if key in self._dict:
             tup = self._dict[key]
@@ -167,17 +153,11 @@ class KeyValueStore(object):
             value: string. A value to store.
             """
         
-        ###########################################
-        #TODO: Implement StoreValue Function
-        ###########################################
         self._dict[key] = (value, time.time())
     
     
     def Keys(self):
         """Returns a list of all keys in the datastore."""
         
-        ###########################################
-        #TODO: Implement Keys Function
-        ###########################################
         return self._dict.keys()
 

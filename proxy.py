@@ -45,10 +45,6 @@ def ForwardCommandToServer(command, server_addr, server_port):
     result = library.ReadCommand(sock)
     sock.close()
     return result
-###################################################
-#TODO: Implement Function: WiP
-###################################################
-
 
 
 def CheckCachedResponse(command_line, cache):
@@ -61,20 +57,10 @@ def CheckCachedResponse(command_line, cache):
         out = (name, temp)
     
     if cmd == 'PUT' and cache.GetValue(name, MAX_CACHE_AGE_SEC):
-        cache.StoreValue(name, text)
+        cache.StoreValue(name, '%s\n' % text)
     
     return out
 
-# Update the cache for PUT commands but also pass the traffic to the server.
-##########################
-#TODO: Implement section
-##########################
-
-# GET commands can be cached.
-
-############################
-#TODO: Implement section
-############################
 
 def ProxyClientCommand(sock, server_addr, server_port, cache):
     """Receives a command from a client and forwards it to a server:port.
@@ -92,9 +78,6 @@ def ProxyClientCommand(sock, server_addr, server_port, cache):
         the server.
         """
     
-    ###########################################
-    #TODO: Implement ProxyClientCommand
-    ###########################################
     command = library.ReadCommand(sock)
     result = CheckCachedResponse(command, cache)
     
@@ -123,10 +106,6 @@ def main():
         print('Received connection from %s:%d' % (address, port))
         ProxyClientCommand(client_sock, SERVER_ADDRESS, SERVER_PORT, cache)
         client_sock.close()
-
-#################################
-#TODO: Close socket's connection
-#################################
 
 
 main()
